@@ -89,8 +89,8 @@ endif
 HOME_LIB_PATH  := $(HOME)/flame/lib
 
 # OpenBLAS
-OPENBLAS_LIB   := $(HOME_LIB_PATH)/libopenblas.a
-OPENBLASP_LIB  := $(HOME_LIB_PATH)/libopenblasp.a
+OPENBLAS_LIB   := "-Wl,-rpath,\$$ORIGIN/" $(HOME_LIB_PATH)/libopenblas.a
+OPENBLASP_LIB  := "-Wl,-rpath,\$$ORIGIN/" $(HOME_LIB_PATH)/libopenblasp.a
 
 # ATLAS
 #ATLAS_LIB      := $(HOME_LIB_PATH)/libf77blas.a \
@@ -122,8 +122,8 @@ MKLP_LIB       := -L$(MKL_LIB_PATH) \
                   #-L$(ICC_LIB_PATH) \
                   #-lgomp
 
-VENDOR_LIB     := $(MKL_LIB)
-VENDORP_LIB    := $(MKLP_LIB)
+VENDOR_LIB     := -lblas -framework Accelerate # $(MKL_LIB)
+VENDORP_LIB    := -lblas -framework Accelerate # $(MKLP_LIB)
 
 
 #
@@ -170,7 +170,7 @@ CFLAGS         := $(call get-user-cflags-for,$(CONFIG_NAME))
 CFLAGS         += -I$(TEST_SRC_PATH)
 
 # Locate the libblis library to which we will link.
-#LIBBLIS_LINK   := $(LIB_PATH)/$(LIBBLIS_L)
+LIBBLIS_LINK   := $(LIB_PATH)/libblis.dylib #$(LIBBLIS_L)
 
 # Define a set of CFLAGS for use with C++ and Eigen.
 CXXFLAGS       := $(subst -std=c99,-std=c++11,$(CFLAGS))
