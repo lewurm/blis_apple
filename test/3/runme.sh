@@ -10,7 +10,7 @@ delay=0.1
 #sys="lonestar5"
 #sys="ul252"
 #sys="ul264"
-sys="ul2128"
+sys="applem1"
 
 # Bind threads to processors.
 #export OMP_PROC_BIND=true
@@ -68,28 +68,27 @@ elif [ ${sys} = "ul264" ]; then
 	         jc1ic8jr4_6000
 	         jc2ic8jr4_8000"
 
-elif [ ${sys} = "ul2128" ]; then
+elif [ ${sys} = "applem1" ]; then
 
-	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/field/intel/mkl/lib/intel64"
-	export GOMP_CPU_AFFINITY="0-127"
+	# export DYLD_LIBRARY_PATH="../../lib/aaplmx"
 
-	numactl="numactl --interleave=all"
-	threads="jc1ic1jr1_2400
-	         jc4ic4jr4_6000
-	         jc8ic4jr4_8000"
-	#threads="jc4ic4jr4_6000
-	#         jc8ic4jr4_8000"
-	#threads="jc1ic1jr1_2400"
-	#threads="jc4ic4jr4_6000"
-	#threads="jc8ic4jr4_8000"
+	# threads="jc1ic1jr1_2400
+	#          jc1ic1jr1_6000
+	threads="jc1ic2jr4_12000"
+	# threads="jc1ic2jr4_4000"
+	# threads="jc1ic1jr1_2400
+	#          jc1ic1jr1_6000
+	#          jc1ic1jr1_8000"
+
 fi
 
 # Datatypes to test.
-test_dts="d s z c"
-#test_dts="s"
+# test_dts="d" # s z c"
+test_dts="s d" # z c"
+#test_dts="d"
 
 # Operations to test.
-test_ops="gemm hemm herk trmm trsm"
+test_ops="gemm" # hemm herk trmm trsm"
 #test_ops="herk"
 
 # Implementations to test.
@@ -121,7 +120,7 @@ elif [ "${impls}" = "other" ]; then
 	test_impls="openblas vendor eigen"
 else
 
-	test_impls="openblas asm_blis vendor eigen"
+	test_impls="neon asm_blis vendor" # openblas"
 fi
 
 # Save a copy of GOMP_CPU_AFFINITY so that if we have to unset it, we can
@@ -184,8 +183,16 @@ for th in ${threads}; do
 					continue;
 				fi
 
+				unset DYLD_LIBRARY_PATH
 				# Find the threading suffix by probing the executable.
-				binname=$(ls ${exec_root}_${dt}${op}_${psize}_${im}_*.x)
+				if [ "${im}" = "neon" ]; then
+					export DYLD_LIBRARY_PATH="../../lib/thunderx2"
+					binname=$(ls ${exec_root}_${dt}${op}_${psize}_asm_blis_*.x)
+				else
+					export DYLD_LIBRARY_PATH="../../lib/aaplmx"
+					binname=$(ls ${exec_root}_${dt}${op}_${psize}_${im}_*.x)
+				fi
+
 				suf_ext=${binname##*_}
 				suf=${suf_ext%%.*}
 
@@ -196,7 +203,7 @@ for th in ${threads}; do
 
 					# Set the threading parameters based on the implementation
 					# that we are preparing to run.
-					if   [ "${im}" = "asm_blis" ]; then
+					if   [ "${im}" = "asm_blis" -o "${im}" = "neon" ]; then
 						unset  OMP_NUM_THREADS
 						export BLIS_JC_NT=${jc_nt}
 						export BLIS_PC_NT=${pc_nt}
@@ -205,7 +212,7 @@ for th in ${threads}; do
 						export BLIS_IR_NT=${ir_nt}
 					elif [ "${im}" = "openblas" ]; then
 						unset  OMP_NUM_THREADS
-						export OPENBLAS_NUM_THREADS=${nt}
+						export OPENBLAS_NUM_THREADS=4 # ${nt}
 					elif [ "${im}" = "eigen" ]; then
 						export OMP_NUM_THREADS=${nt}
 					elif [ "${im}" = "vendor" ]; then
@@ -236,9 +243,13 @@ for th in ${threads}; do
 					export nt_use=1
 				fi
 
-				# Construct the name of the test executable.
-				exec_name="${exec_root}_${dt}${op}_${psize}_${im}_${suf}.x"
-
+				if [ "${im}" = "neon" ]; then
+					# Construct the name of the test executable.
+					exec_name="${exec_root}_${dt}${op}_${psize}_asm_blis_${suf}.x"
+				else
+					# Construct the name of the test executable.
+					exec_name="${exec_root}_${dt}${op}_${psize}_${im}_${suf}.x"
+				fi
 				# Construct the name of the output file.
 				out_file="${out_root}_${suf}_${dt}${op}_${im}.m"
 
