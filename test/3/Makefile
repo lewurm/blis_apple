@@ -224,10 +224,10 @@ PDEF_2S  := -DP_BEGIN=$(P2_BEGIN) -DP_INC=$(P2_INC) -DP_MAX=$(P2_MAX)
 #
 
 all:        all-st all-1s all-2s
-blis:       blis-st blis-1s blis-2s
+blis:       blis-st blis-1s # blis-2s
 openblas:   openblas-st openblas-1s openblas-2s
 eigen:      eigen-st eigen-1s eigen-2s
-vendor:     vendor-st vendor-1s vendor-2s
+vendor:     vendor-st vendor-1s # vendor-2s
 mkl:        vendor
 armpl:      vendor
 
