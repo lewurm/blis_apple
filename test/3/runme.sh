@@ -74,7 +74,7 @@ elif [ ${sys} = "applem1" ]; then
 
 	# threads="jc1ic1jr1_2400
 	#          jc1ic1jr1_6000
-	threads="jc1ic2jr4_12000"
+	threads="jc1ic1jr1_2400 jc1ic2jr4_12000"
 	# threads="jc1ic2jr4_4000"
 	# threads="jc1ic1jr1_2400
 	#          jc1ic1jr1_6000
@@ -243,15 +243,21 @@ for th in ${threads}; do
 					export nt_use=1
 				fi
 
+				# Construct the name of the test executable.
 				if [ "${im}" = "neon" ]; then
-					# Construct the name of the test executable.
 					exec_name="${exec_root}_${dt}${op}_${psize}_asm_blis_${suf}.x"
 				else
-					# Construct the name of the test executable.
 					exec_name="${exec_root}_${dt}${op}_${psize}_${im}_${suf}.x"
 				fi
+
 				# Construct the name of the output file.
-				out_file="${out_root}_${suf}_${dt}${op}_${im}.m"
+				if [ "${im}" = "asm_blis" ]; then
+					out_file="${out_root}_${suf}_${dt}${op}_aaplmx.m"
+				elif [ "${im}" = "vendor" ]; then
+					out_file="${out_root}_${suf}_${dt}${op}_accelerate.m"
+				else
+					out_file="${out_root}_${suf}_${dt}${op}_${im}.m"
+				fi
 
 				#echo "Running (nt = ${nt_use}) ./${exec_name} > ${out_file}"
 				echo "Running ${numactl} ./${exec_name} > ${out_file}"
