@@ -131,9 +131,9 @@ VENDORP_LIB    := -lblas -framework Accelerate # $(MKLP_LIB)
 #
 
 # Single core (single-threaded)
-PS_BEGIN := 48
-PS_MAX   := 2400
-PS_INC   := 48
+PS_BEGIN := 80
+PS_MAX   := 4000
+PS_INC   := 80
 
 # Single-socket (multithreaded)
 P1_BEGIN := 160

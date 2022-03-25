@@ -74,7 +74,7 @@ elif [ ${sys} = "applem1" ]; then
 
 	# threads="jc1ic1jr1_2400
 	#          jc1ic1jr1_6000
-	threads="jc1ic1jr1_2400 jc1ic2jr4_12000"
+	threads="jc1ic1jr1_4000 jc1ic2jr4_12000"
 	# threads="jc1ic2jr4_4000"
 	# threads="jc1ic1jr1_2400
 	#          jc1ic1jr1_6000
@@ -84,7 +84,7 @@ fi
 
 # Datatypes to test.
 # test_dts="d" # s z c"
-test_dts="s d" # z c"
+test_dts="s" # d z c"
 #test_dts="d"
 
 # Operations to test.
